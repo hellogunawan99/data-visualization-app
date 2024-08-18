@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { FaChartBar, FaHome, FaNetworkWired, FaPuzzlePiece, FaBars, FaTimes, FaChevronDown, FaChevronUp, FaAlgolia, FaSketch, FaGitkraken, FaTruckLoading, FaTruckMoving, FaTencentWeibo, FaKeyboard, FaCalendarPlus } from 'react-icons/fa';
+import { FaChartBar, FaHome, FaNetworkWired, FaPuzzlePiece, FaBars, FaTimes, FaChevronDown, FaChevronUp, FaAlgolia, FaSketch, FaGitkraken, FaTruckLoading, FaTruckMoving, FaTencentWeibo, FaKeyboard, FaCalendarPlus, FaUncharted } from 'react-icons/fa';
 
 export default function Layout({ children }) {
   const router = useRouter();
@@ -17,6 +17,7 @@ export default function Layout({ children }) {
         { href: '/log-problem-chart', label: 'Log Problem', icon: <FaAlgolia /> },
         { href: '/schedule-jigsaw-chart', label: 'Schedule Jigsaw', icon: <FaTruckMoving /> },
         { href: '/unschedule-jigsaw-chart', label: 'Unschedule Jigsaw', icon: <FaTruckLoading /> },
+        { href: '/nocomm-type-chart', label: 'Nocomm Type Jigsaw', icon: <FaUncharted /> },
         { href: '/schedule-network-chart', label: 'Schedule Network', icon: <FaNetworkWired /> },
         { href: '/unschedule-network-chart', label: 'Unschedule Network', icon: <FaTencentWeibo /> },
         { href: '/ytd-nocom-gps', label: 'YTD Nocomm & GPS', icon: <FaCalendarPlus /> },

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Layout from '../components/Layout';
-import { FaChartBar, FaPuzzlePiece } from 'react-icons/fa';
+import { FaChalkboard, FaChargingStation, FaChartArea, FaChartBar, FaChartLine, FaChartPie, FaPuzzlePiece, FaRegChartBar, FaUncharted } from 'react-icons/fa';
 
 export default function Home() {
   return (
@@ -24,31 +24,37 @@ export default function Home() {
             href="/schedule-jigsaw-chart"
             title="Schedule Jigsaw"
             description="Schedule Pekerjaan Jigsaw"
-            icon={<FaPuzzlePiece className="text-4xl mb-4 text-purple-500" />}
+            icon={<FaChalkboard className="text-4xl mb-4 text-purple-500" />}
           />
           <ChartLink 
             href="/unschedule-jigsaw-chart"
             title="Unschedule Jigsaw"
             description="Pekerjaan Unschedule Jigsaw"
-            icon={<FaPuzzlePiece className="text-4xl mb-4 text-yellow-500" />}
+            icon={<FaChargingStation className="text-4xl mb-4 text-yellow-500" />}
+          />
+          <ChartLink 
+            href="/nocomm-type-chart"
+            title="NoComm Type"
+            description="Pekerjaan Unschedule Jigsaw"
+            icon={<FaUncharted className="text-4xl mb-4 text-yellow-500" />}
           />
           <ChartLink 
             href="/schedule-network-chart"
             title="Schedule Network"
             description="Pekerjaan Schedule Network"
-            icon={<FaPuzzlePiece className="text-4xl mb-4 text-green-500" />}
+            icon={<FaChartLine className="text-4xl mb-4 text-green-500" />}
           />
           <ChartLink 
             href="/unschedule-network-chart"
             title="Unschedule Network"
             description="Pekerjaan Unschedule Network"
-            icon={<FaPuzzlePiece className="text-4xl mb-4 text-red-500" />}
+            icon={<FaChartPie className="text-4xl mb-4 text-red-500" />}
           />
           <ChartLink 
             href="/ytd-nocom-gps"
             title="Year to Date Nocomm & GPS"
             description="Year to Date untuk Problem Nocomm dan GPS"
-            icon={<FaPuzzlePiece className="text-4xl mb-4 text-red-500" />}
+            icon={<FaRegChartBar className="text-4xl mb-4 text-red-500" />}
           />
         </div>
       </div>
