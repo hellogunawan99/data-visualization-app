@@ -26,12 +26,8 @@ export default async function handler(req, res) {
     `, [startDate, endDate]);
 
     await connection.end();
-
-    console.log('API response:', rows);
-
     res.status(200).json(rows);
   } catch (error) {
-    console.error('API error:', error);
     res.status(500).json({ error: 'Failed to fetch data' });
   }
 }
