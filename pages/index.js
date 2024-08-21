@@ -7,7 +7,7 @@ export default function Home() {
     <Layout>
       <div className="container mx-auto p-8 bg-gradient-to-r from-blue-100 to-purple-100 min-h-screen">
         <h1 className="text-5xl font-extrabold mb-6 text-center text-gray-800">
-          Data Visualization Hub
+          Data Visualization MDD
         </h1>
         <p className="text-xl mb-8 text-center text-gray-600">
           Discover insights through interactive and engaging visualizations
