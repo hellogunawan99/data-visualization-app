@@ -22,6 +22,7 @@ export default function Layout({ children }) {
         { href: '/schedule-network-chart', label: 'Schedule Network', icon: <FaNetworkWired /> },
         { href: '/unschedule-network-chart', label: 'Unschedule Network', icon: <FaTencentWeibo /> },
         { href: '/ytd-nocom-gps', label: 'YTD Nocomm & GPS', icon: <FaCalendarPlus /> },
+        { href: '/pm-jigsaw', label: 'PM Jigsaw', icon: <FaCalendarPlus /> },
       ],
     },
   ];
