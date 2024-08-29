@@ -39,6 +39,12 @@ export default function Home() {
             icon={<FaUncharted className="text-4xl mb-4 text-yellow-500" />}
           />
           <ChartLink 
+            href="/display-problem-type-chart"
+            title="Display Problem Type"
+            description="Pekerjaan Unschedule Jigsaw untuk melihat progress pekerjaan Display Problem dan melihat trend"
+            icon={<FaUncharted className="text-4xl mb-4 text-yellow-500" />}
+          />
+          <ChartLink 
             href="/schedule-network-chart"
             title="Schedule Network"
             description="Pekerjaan Schedule Network untuk melihat progress pekerjaan network schedule dan melihat trend"

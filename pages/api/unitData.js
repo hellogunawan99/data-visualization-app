@@ -12,13 +12,13 @@ export default async function handler(req, res) {
     });
 
     const [rows] = await connection.execute(`
-      SELECT DATE(date_time) AS date, COUNT(DISTINCT id_unit) as unit_count
+      SELECT DATE(date) AS date, COUNT(DISTINCT id_unit) as unit_count 
       FROM (
-        SELECT id_unit, DATE(date_time) AS date_time
-        FROM display_status
-        WHERE status = 'SYN_SENT'
-          AND DATE(date_time) BETWEEN ? AND ?
-        GROUP BY id_unit, DATE(date_time)
+        SELECT id_unit, DATE(date) AS date
+        FROM log_nrt
+        WHERE status = 'SYN_SENT' 
+        AND DATE(date) BETWEEN ? AND ?
+        GROUP BY id_unit, DATE(date)
         HAVING COUNT(*) >= 2
       ) AS subquery
       GROUP BY date

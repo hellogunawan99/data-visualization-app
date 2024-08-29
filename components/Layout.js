@@ -18,6 +18,7 @@ export default function Layout({ children }) {
         { href: '/schedule-jigsaw-chart', label: 'Schedule Jigsaw', icon: <FaTruckMoving /> },
         { href: '/unschedule-jigsaw-chart', label: 'Unschedule Jigsaw', icon: <FaTruckLoading /> },
         { href: '/nocomm-type-chart', label: 'Nocomm Type Jigsaw', icon: <FaUncharted /> },
+        { href: '/display-problem-type-chart', label: 'Display Problem Type Jigsaw', icon: <FaUncharted /> },
         { href: '/schedule-network-chart', label: 'Schedule Network', icon: <FaNetworkWired /> },
         { href: '/unschedule-network-chart', label: 'Unschedule Network', icon: <FaTencentWeibo /> },
         { href: '/ytd-nocom-gps', label: 'YTD Nocomm & GPS', icon: <FaCalendarPlus /> },
