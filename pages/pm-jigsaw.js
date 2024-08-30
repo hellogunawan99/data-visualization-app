@@ -19,6 +19,7 @@ const AchievementCell = ({ achievement }) => {
 };
 
 const MTDTable = () => {
+  const [unitList, setUnitList] = useState([]);
   const [mtdData, setMtdData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,13 +27,20 @@ const MTDTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/pm-jigsaw-api');
-        if (!response.ok) {
+        const [unitResponse, mtdResponse] = await Promise.all([
+          fetch('/api/pm-jigsaw-list-unit-api'),
+          fetch('/api/pm-jigsaw-api')
+        ]);
+
+        if (!unitResponse.ok || !mtdResponse.ok) {
           throw new Error('Network response was not ok');
         }
-        const data = await response.json();
-        console.log('Fetched data:', data);
-        setMtdData(data);
+
+        const unitData = await unitResponse.json();
+        const mtdData = await mtdResponse.json();
+
+        setUnitList(unitData.unitList || []);
+        setMtdData(mtdData);
       } catch (error) {
         console.error('Fetch error:', error);
         setError(error.message);
@@ -50,8 +58,9 @@ const MTDTable = () => {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-2xl font-bold mb-4">MTD Table (July - December)</h1>
-        <div className="overflow-x-auto">
+
+        <h2 className="text-xl font-bold mb-4">MTD Table (July - December)</h2>
+        <div className="overflow-x-auto mb-8">
           <table className="w-full border-collapse border border-gray-300 text-sm">
             <thead>
               <tr className="bg-green-500 text-white">
@@ -77,8 +86,8 @@ const MTDTable = () => {
               <tr>
                 <td className="font-bold p-1 border border-gray-300">MTD</td>
                 {monthNames.map((_, index) => {
-                  const monthIndex = index + 6; // July is 6, August is 7, etc.
-                  const plan = 95; // Assuming a fixed plan of 95 for each month
+                  const monthIndex = index + 6;
+                  const plan = 95;
                   const actual = mtdData[monthIndex]?.mtd || 0;
                   return (
                     <React.Fragment key={`mtd-${monthIndex}`}>
@@ -92,7 +101,9 @@ const MTDTable = () => {
             </tbody>
           </table>
         </div>
-        <div className="mt-4">
+
+        <h2 className="text-xl font-bold mb-4">Type Unit</h2>
+        <div className="overflow-x-auto mb-8">
           <table className="w-full border-collapse border border-gray-300 text-sm">
             <thead>
               <tr className="bg-green-500 text-white">
@@ -120,7 +131,7 @@ const MTDTable = () => {
                   <td className="font-bold p-1 border border-gray-300">{week}</td>
                   {monthNames.map((_, monthIndex) => {
                     const actualMonthIndex = monthIndex + 6;
-                    const plan = 24; // Plan is always 24, including Week 4
+                    const plan = 24;
                     const actual = mtdData[actualMonthIndex]?.weeks?.[weekIndex + 1] || 0;
                     return (
                       <React.Fragment key={`week-${weekIndex}-month-${monthIndex}`}>
@@ -130,6 +141,27 @@ const MTDTable = () => {
                       </React.Fragment>
                     );
                   })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <h1 className="text-2xl font-bold mb-4">Preventive Maintenance Jigsaw Periode 2</h1>
+        <div className="text-sm mb-4">
+          <p>Total : {unitList.length} | Plan PM/Day : 3 Equipment</p>
+        </div>
+        <h2 className="text-xl font-bold mb-4">Unit List</h2>
+        <div className="overflow-x-auto mb-8">
+          <table className="w-full border-collapse border border-gray-300 text-xs">
+            <tbody>
+              {Array.from({ length: Math.ceil(unitList.length / 20) }, (_, i) => (
+                <tr key={i}>
+                  {unitList.slice(i * 20, (i + 1) * 20).map((unit, index) => (
+                    <td key={index} className="p-1 text-center border border-gray-300 bg-gray-100">
+                      {unit}
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>

@@ -63,8 +63,6 @@ export default async function handler(req, res) {
         groupedData[month].weeks[week] = groupedData[month].weeks[week].size;
       });
     });
-
-    console.log('Processed data:', groupedData);
     res.status(200).json(groupedData);
   } catch (error) {
     console.error('API Error:', error);
