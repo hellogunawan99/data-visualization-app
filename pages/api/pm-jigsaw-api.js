@@ -22,7 +22,11 @@ export default async function handler(req, res) {
 
     const totalInstalledUnits = totalInstalled[0].total_installed;
     const baseMonthlyPlan = Math.floor(totalInstalledUnits / 6);
+    const initialPlans = Array(6).fill(baseMonthlyPlan);
     const remainder = totalInstalledUnits % 6;
+    for (let i = 0; i < remainder; i++) {
+      initialPlans[i]++;
+    }
 
     // Query untuk data aktual
     const [rows] = await dbConnection.execute(`
@@ -46,10 +50,10 @@ export default async function handler(req, res) {
 
     const groupedData = {};
     let remainingUnits = totalInstalledUnits;
+    let cumulativeAdjustment = 0;
 
     // Inisialisasi dan proses data
     for (let i = 6; i <= 11; i++) {
-      const initialMonthlyPlan = i < 6 + remainder ? baseMonthlyPlan + 1 : baseMonthlyPlan;
       let monthlyActual = 0;
       
       // Hitung actual untuk bulan ini
@@ -57,24 +61,35 @@ export default async function handler(req, res) {
         monthlyActual += row.actual;
       });
 
-      // Hitung adjusted plan
-      const adjustedPlan = Math.min(remainingUnits, initialMonthlyPlan);
+      const monthIndex = i - 6;
+      let monthlyPlan = initialPlans[monthIndex];
+
+      if (i > 6) {
+        const adjustment = Math.abs(groupedData[i-1].mtd.actual - groupedData[i-1].mtd.plan);
+        const remainingMonths = 11 - i + 1;
+        const adjustmentPerMonth = Math.ceil(adjustment / remainingMonths);
+
+        if (groupedData[i-1].mtd.actual > groupedData[i-1].mtd.plan) {
+          monthlyPlan = Math.max(0, monthlyPlan - adjustmentPerMonth);
+        } else {
+          monthlyPlan = monthlyPlan + adjustmentPerMonth;
+        }
+      }
 
       groupedData[i] = {
         mtd: { 
-          initialPlan: initialMonthlyPlan,
-          adjustedPlan: adjustedPlan,
+          plan: monthlyPlan,
           actual: monthlyActual
         },
         weeks: {}
       };
 
       // Proses data mingguan
-      const weeklyPlan = Math.ceil(adjustedPlan / 4);
+      const weeklyPlan = Math.ceil(monthlyPlan / 4);
       for (let week = 1; week <= 4; week++) {
         const weeklyData = rows.find(row => row.month === i + 1 && row.week === week);
         const weeklyActual = weeklyData ? weeklyData.actual : 0;
-        const remainingWeeklyPlan = week === 4 ? adjustedPlan - (weeklyPlan * 3) : weeklyPlan;
+        const remainingWeeklyPlan = week === 4 ? monthlyPlan - (weeklyPlan * 3) : weeklyPlan;
         
         groupedData[i].weeks[week] = {
           plan: remainingWeeklyPlan,
@@ -82,14 +97,13 @@ export default async function handler(req, res) {
         };
       }
 
-      remainingUnits = Math.max(0, remainingUnits - monthlyActual);
+      remainingUnits -= monthlyActual;
     }
 
     res.status(200).json({ 
       monthlyData: groupedData, 
       totalInstalledUnits,
-      baseMonthlyPlan,
-      remainder
+      baseMonthlyPlan
     });
   } catch (error) {
     console.error('API Error:', error);
