@@ -26,6 +26,60 @@ const MTDTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const calculateMonthlyPlans = (totalUnits) => {
+    const baseMonthlyPlan = Math.floor(totalUnits / 6);
+    const remainder = totalUnits % 6;
+    const plans = Array(6).fill(baseMonthlyPlan);
+    
+    for (let i = 0; i < remainder; i++) {
+      plans[i]++;
+    }
+    
+    return plans;
+  };
+
+  const calculateAdjustment = (difference, remainingMonths) => {
+    const adjustmentPerMonth = Math.floor(difference / remainingMonths);
+    const remainder = difference % remainingMonths;
+    return { adjustmentPerMonth, remainder };
+  };
+
+  const processData = (data) => {
+    const totalUnits = data.totalInstalledUnits;
+    let monthlyData = data.monthlyData;
+
+    const initialPlans = calculateMonthlyPlans(totalUnits);
+    for (let i = 0; i < 6; i++) {
+      if (!monthlyData[i + 6]) {
+        monthlyData[i + 6] = { mtd: {} };
+      }
+      monthlyData[i + 6].mtd.plan = initialPlans[i];
+    }
+
+    let remainingUnits = totalUnits;
+    for (let month = 6; month <= 11; month++) {
+      const actualData = monthlyData[month]?.mtd?.actual;
+      if (actualData !== undefined && actualData > 0) {
+        const difference = actualData - monthlyData[month].mtd.plan;
+        const remainingMonths = 11 - month;
+        const { adjustmentPerMonth, remainder } = calculateAdjustment(difference, remainingMonths);
+
+        for (let futureMonth = month + 1; futureMonth <= 11; futureMonth++) {
+          if (monthlyData[futureMonth]) {
+            monthlyData[futureMonth].mtd.plan -= adjustmentPerMonth;
+            if (futureMonth - month <= remainder) {
+              monthlyData[futureMonth].mtd.plan -= 1;
+            }
+          }
+        }
+
+        remainingUnits -= actualData;
+      }
+    }
+
+    return monthlyData;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -43,8 +97,10 @@ const MTDTable = () => {
 
         setUnitList(unitData.unitList || []);
         setTotalInstalledUnits(mtdData.totalInstalledUnits);
-        setBaseMonthlyPlan(mtdData.baseMonthlyPlan);
-        setMtdData(mtdData.monthlyData);
+        setBaseMonthlyPlan(Math.floor(mtdData.totalInstalledUnits / 6));
+
+        const processedData = processData(mtdData);
+        setMtdData(processedData);
       } catch (error) {
         console.error('Fetch error:', error);
         setError(error.message);
@@ -59,7 +115,7 @@ const MTDTable = () => {
   if (loading) return <Layout><div>Loading...</div></Layout>;
   if (error) return <Layout><div>Error: {error}</div></Layout>;
 
-  const totalUnitsBelumPM = Object.values(mtdData).reduce((sum, month) => sum + month.mtd.actual, 0);
+  const totalUnitsBelumPM = Object.values(mtdData).reduce((sum, month) => sum + (month.mtd?.actual || 0), 0);
 
   return (
     <Layout>
