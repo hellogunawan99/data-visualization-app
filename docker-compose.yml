@@ -12,9 +12,12 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
-      # Add your environment variables here
-      # - DATABASE_URL=your_database_url
-      # - API_KEY=your_api_key
+    # Method 1: Use env_file to load all variables from .env.local
+    env_file:
+      - .env.local
+    # Method 2: Mount the .env.local file into the container (alternative approach)
+    # volumes:
+    #   - ./.env.local:/app/.env.local
     networks:
       - app-network
     healthcheck:
