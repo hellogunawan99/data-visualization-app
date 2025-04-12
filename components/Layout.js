@@ -25,6 +25,7 @@ export default function Layout({ children }) {
         { href: '/pm-jigsaw', label: 'PM Jigsaw', icon: <FaCalendarPlus /> },
       ],
     },
+    { href: 'http://localhost:5000', label: 'IP Monitoring', icon: <FaUncharted /> },
   ];
 
   const toggleDropdown = (label) => {
