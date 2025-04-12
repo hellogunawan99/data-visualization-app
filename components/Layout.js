@@ -1,12 +1,41 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { FaChartBar, FaHome, FaNetworkWired, FaPuzzlePiece, FaBars, FaTimes, FaChevronDown, FaChevronUp, FaAlgolia, FaSketch, FaGitkraken, FaTruckLoading, FaTruckMoving, FaTencentWeibo, FaKeyboard, FaCalendarPlus, FaUncharted } from 'react-icons/fa';
+import {
+  FaChartBar,
+  FaHome,
+  FaNetworkWired,
+  FaPuzzlePiece,
+  FaBars,
+  FaTimes,
+  FaChevronDown,
+  FaChevronUp,
+  FaAlgolia,
+  FaSketch,
+  FaGitkraken,
+  FaTruckLoading,
+  FaTruckMoving,
+  FaTencentWeibo,
+  FaKeyboard,
+  FaCalendarPlus,
+  FaUncharted,
+  FaLink,
+  FaTruckPickup,
+  FaAddressBook,
+  FaWeight,
+  FaPeopleArrows,
+  FaPeopleCarry,
+  FaRegHandPointer,
+  FaRegHandPointRight,
+  FaRedoAlt,
+  FaWatchmanMonitoring,
+  FaBook
+} from 'react-icons/fa';
 
 export default function Layout({ children }) {
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [openDropdown, setOpenDropdown] = useState(null);
+  const [openDropdowns, setOpenDropdowns] = useState({});
 
   const navItems = [
     { href: '/', label: 'Home', icon: <FaHome /> },
@@ -25,25 +54,77 @@ export default function Layout({ children }) {
         { href: '/pm-jigsaw', label: 'PM Jigsaw', icon: <FaCalendarPlus /> },
       ],
     },
-    { href: 'http://localhost:5000', label: 'IP Monitoring', icon: <FaUncharted /> },
+    {
+      label: 'Link Web',
+      icon: <FaLink />,
+      subItems: [
+        { href: 'http://192.168.211.22/reporting/auth', label: 'Reporting', icon: <FaRegHandPointRight /> },
+        {
+          label: 'Monitoring',
+          icon: <FaRedoAlt />,
+          subItems: [
+            { href: 'https://192.168.114.252:4343/login.html', label: 'Aruba', icon: <FaNetworkWired /> },
+            { href: 'https://192.168.211.31:4444/index.htm', label: 'PRTG', icon: <FaWatchmanMonitoring /> },
+            { href: 'http://192.168.211.48:5000', label: 'IP Realtime Monitor', icon: <FaAddressBook /> },
+          ],
+        },
+        {
+          label: 'Jigsaw',
+          icon: <FaRegHandPointer />,
+          subItems: [
+            { href: 'http://192.168.211.44/jigsaw', label: 'Nocom Jigsaw', icon: <FaTruckPickup /> },
+            { href: 'http://192.168.211.44/payload', label: 'Payload', icon: <FaWeight /> },
+            { href: 'http://192.168.211.44/jigsaw/1', label: 'Realtime Monitor Jigsaw', icon: <FaAlgolia /> },
+            { href: 'http://192.168.211.44/jigsaw/2', label: 'Realtime Monitor Jigsaw Old', icon: <FaTimes /> },
+          ]
+        },
+        { href: 'http://192.168.211.44/mds_management_ip/_login/form', label: 'Management IP', icon: <FaBars /> },
+        {
+          label: 'Administrasi',
+          icon: <FaBook />,
+          subItems: [
+            { href: 'http://192.168.200.22/myhr/', label: 'MyHR', icon: <FaPeopleArrows /> },
+            { href: 'https://app-saptaindra.msappproxy.net/hris/login/', label: 'HRIS', icon: <FaPeopleCarry /> },
+            { href: 'https://sites.google.com/view/e-learningshe/beranda', label: 'Induksi', icon: <FaRedoAlt /> },
+          ]
+        }
+      ],
+    },
   ];
 
-  const toggleDropdown = (label) => {
-    setOpenDropdown(openDropdown === label ? null : label);
-  };
+  const NavItem = ({ item, path = "", depth = 0 }) => {
+    const itemPath = path + "-" + item.label;
+    const isActive = item.href
+      ? router.pathname === item.href
+      : item.subItems?.some(subItem => isItemActive(subItem, itemPath));
+    const isOpen = openDropdowns[itemPath] || false;
 
-  const NavItem = ({ item }) => {
-    const isActive = item.href ? router.pathname === item.href : item.subItems?.some(subItem => router.pathname === subItem.href);
-    const isOpen = openDropdown === item.label;
+    function isItemActive(item, currentPath) {
+      if (item.href && router.pathname === item.href) {
+        return true;
+      }
+      if (item.subItems) {
+        return item.subItems.some(subItem => isItemActive(subItem, currentPath + "-" + item.label));
+      }
+      return false;
+    }
+
+    const toggleDropdown = () => {
+      setOpenDropdowns(prev => ({
+        ...prev,
+        [itemPath]: !prev[itemPath]
+      }));
+    };
 
     if (item.subItems) {
       return (
         <div>
           <button
-            onClick={() => toggleDropdown(item.label)}
+            onClick={toggleDropdown}
             className={`w-full flex items-center justify-between px-4 py-2 text-sm font-medium ${
               isActive ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-500 hover:text-white'
             } transition duration-150 ease-in-out`}
+            style={{ paddingLeft: `${depth * 8 + 16}px` }}
           >
             <span className="flex items-center">
               <span className="mr-3">{item.icon}</span>
@@ -52,20 +133,9 @@ export default function Layout({ children }) {
             {isOpen ? <FaChevronUp /> : <FaChevronDown />}
           </button>
           {isOpen && (
-            <div className="pl-4">
-              {item.subItems.map((subItem) => (
-                <Link
-                  key={subItem.href}
-                  href={subItem.href}
-                  className={`flex items-center px-4 py-2 text-sm ${
-                    router.pathname === subItem.href
-                      ? 'bg-blue-700 text-white'
-                      : 'text-blue-100 hover:bg-blue-500 hover:text-white'
-                  } transition duration-150 ease-in-out`}
-                >
-                  <span className="mr-3">{subItem.icon}</span>
-                  {subItem.label}
-                </Link>
+            <div>
+              {item.subItems.map((subItem, index) => (
+                <NavItem key={index} item={subItem} path={itemPath} depth={depth + 1} />
               ))}
             </div>
           )}
@@ -75,12 +145,13 @@ export default function Layout({ children }) {
 
     return (
       <Link
-        href={item.href}
+        href={item.href || "#"}
         className={`flex items-center px-4 py-2 text-sm font-medium ${
-          isActive
+          router.pathname === item.href
             ? 'bg-blue-700 text-white'
             : 'text-blue-100 hover:bg-blue-500 hover:text-white'
         } transition duration-150 ease-in-out`}
+        style={{ paddingLeft: `${depth * 8 + 16}px` }}
       >
         <span className="mr-3">{item.icon}</span>
         {item.label}
@@ -96,12 +167,12 @@ export default function Layout({ children }) {
           <div className="p-4">
             <Link href="/" className="flex items-center">
               <img className="h-8 w-8 mr-2" src="/next.svg" alt="Logo" />
-              <span className="text-lg font-semibold">Data Viz App</span>
+              <span className="text-lg font-semibold">ITSD</span>
             </Link>
           </div>
           <nav className="flex-grow overflow-y-auto">
-            {navItems.map((item) => (
-              <NavItem key={item.label} item={item} />
+            {navItems.map((item, index) => (
+              <NavItem key={index} item={item} />
             ))}
           </nav>
         </div>
